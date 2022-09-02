@@ -27,6 +27,7 @@ def compute_solution(images: List[Union[PackedImage, StrideImage]]):
     ft = FunctionTracer("compute_solution", "seconds")
 
     for i in range(0,len(images)):
+        print(f'processing image {i}')
         filteredMatrix = processImage(images[i])
         if isinstance(images[i], PackedImage):
             images[i] = matrixToPackedImage(filteredMatrix)
@@ -45,20 +46,17 @@ def processImage(image: Union[PackedImage, StrideImage]) -> PackedImage:
     for row in range(0, resolution.height):
         for column in range(0, resolution.width):
             topLeftCorner = Corner(row, column)
-            pattern = findMatchingPattern(matrix, topLeftCorner)
-
-            if(not(pattern is None)):
-                filterRedEyes(matrix, pattern, topLeftCorner)
+            findMatchingPattern(matrix, topLeftCorner)
 
     return matrix
 
 
 def findMatchingPattern(matrix: [[Pixel]], topLeftCorner: Corner):
-    patterns = [EYE_PATTERN_1, EYE_PATTERN_2, EYE_PATTERN_3, EYE_PATTERN_4]
+    # pattern 3 covers all the pixels of pattern 1 and 2 so we check it before them
+    patterns = [EYE_PATTERN_3, EYE_PATTERN_4, EYE_PATTERN_1, EYE_PATTERN_2]
     for pattern in patterns:
         if checkPattern(matrix, topLeftCorner, pattern):
-            return pattern
-    return None
+            filterRedEyes(matrix, pattern, topLeftCorner)
 
 # checks if the pattern is
 def checkPattern(matrix: [[Pixel]], topLeftCorner: Corner, pattern: EyePattern) -> bool:
@@ -70,7 +68,7 @@ def checkPattern(matrix: [[Pixel]], topLeftCorner: Corner, pattern: EyePattern) 
                 return  False
     return True
 
-def filterRedEyes(matrix: [[Pixel]], pattern, topLeftCorner: Corner):
+def filterRedEyes(matrix: [[Pixel]], pattern: EyePattern, topLeftCorner: Corner):
     for rowOffset in range(0, len(pattern)):
         for columnOffset in range(0, len(pattern[0])):
             patternSymbol = pattern[rowOffset][columnOffset]

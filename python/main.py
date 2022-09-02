@@ -21,7 +21,16 @@ def main():  # pylint: disable=missing-function-docstring
     input_images, output_images = fp.generate_io_data(input_file_name, output_file_name, image_type)
     
     compute_solution(input_images)
-    
+
+    for i in range(0, len(input_images)):
+        for j in range(0, len(input_images[i].pixels_red)):
+            if input_images[i].pixels_red[j] == output_images[i].pixels_red[j]:
+                #print(f'success image {i} at pixel {j}')
+                pass
+            else:
+                print(f'fail image {i} at pixel {j}')
+
+
     if input_images == output_images:
         print("Solution status - [SUCCESS]\n")
     else:
